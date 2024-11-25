@@ -15,8 +15,15 @@ export const FileUpload = ({ onDataLoaded }: FileUploadProps) => {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      onDataLoaded(jsonData);
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+        header: 1,
+        defval: null // This ensures empty cells are represented as null
+      }) as any[][];
+      
+      // Filter out completely empty rows
+      const filteredData = jsonData.filter(row => row.some(cell => cell !== null));
+      
+      onDataLoaded(filteredData);
       toast.success("File uploaded successfully!");
     } catch (error) {
       toast.error("Error reading file. Please make sure it's a valid Excel file.");

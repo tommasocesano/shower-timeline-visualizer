@@ -8,11 +8,6 @@ interface TimelineProps {
 export const Timeline = ({ data }: TimelineProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const calculateWidth = (duration: number) => {
-    const baseWidth = 50; // px per time unit
-    return `${duration * baseWidth}px`;
-  };
-
   const getColorForFeature = (feature: string) => {
     const colors: { [key: string]: string } = {
       "pioggia interna": "bg-blue-500",
@@ -63,9 +58,9 @@ export const Timeline = ({ data }: TimelineProps) => {
               {Array.from({ length: steps }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-[50px] p-4 text-center font-medium border-l"
+                  className="w-[100px] p-4 text-center font-medium border-l"
                 >
-                  {i + 1}
+                  Step {i + 1}
                 </div>
               ))}
             </div>
@@ -73,7 +68,7 @@ export const Timeline = ({ data }: TimelineProps) => {
 
           {/* Timeline rows */}
           {features.map((feature, rowIndex) => (
-            <div key={rowIndex} className="flex border-b last:border-b-0">
+            <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
               <div className="w-40 p-4 font-medium truncate">
                 {feature}
               </div>
@@ -81,11 +76,11 @@ export const Timeline = ({ data }: TimelineProps) => {
                 {data[rowIndex].slice(1).map((active, colIndex) => (
                   <div
                     key={colIndex}
-                    className={`w-[50px] p-4 border-l flex items-center justify-center`}
+                    className={`w-[100px] h-16 border-l flex items-center justify-center`}
                   >
                     {active && (
                       <div 
-                        className={`w-full h-full rounded ${getColorForFeature(feature)} animate-fade-in`}
+                        className={`w-[90%] h-[80%] rounded ${getColorForFeature(feature)} animate-fade-in shadow-sm`}
                         title={`${feature} - Step ${colIndex + 1}`}
                       />
                     )}
