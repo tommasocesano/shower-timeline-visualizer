@@ -1,5 +1,4 @@
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 
 interface CellProps {
   rowIndex: number;
@@ -7,10 +6,10 @@ interface CellProps {
   value: any;
   colIndex: number;
   featureColors: Record<string, string>;
-  onColorChange?: (color: string) => void;
+  isColorCell?: boolean;
 }
 
-export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors, onColorChange }: CellProps) => {
+export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors, isColorCell }: CellProps) => {
   const isSpecialRow = (rowIndex: number, feature: string): string | null => {
     if (rowIndex === 0) return 'duration';
     if (rowIndex === 1) return 'temperature';
@@ -37,7 +36,7 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
       );
     case 'music':
       return value ? (
-        <div className="text-black bg-white px-2 py-1 rounded">
+        <div className="text-black px-2 py-1 text-center w-full">
           {value}
         </div>
       ) : null;
@@ -48,16 +47,12 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
         </div>
       ) : null;
     case 'color':
-      return (
-        <Input
-          type="text"
-          value={value || ''}
-          onChange={(e) => onColorChange?.(e.target.value)}
-          className="w-20 h-8 text-xs"
-          placeholder="#hex"
-          style={{ backgroundColor: value || '#ffffff' }}
+      return value && value.startsWith('#') ? (
+        <div 
+          className="w-[90%] h-[80%] rounded shadow-sm"
+          style={{ backgroundColor: value }}
         />
-      );
+      ) : null;
     default:
       return value ? (
         <div 

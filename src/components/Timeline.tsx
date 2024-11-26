@@ -38,22 +38,20 @@ export const Timeline = ({ data }: TimelineProps) => {
     if (!timelineRef.current) return;
     
     try {
-      // Create a clone of the timeline element
-      const clone = timelineRef.current.cloneNode(true) as HTMLElement;
-      clone.style.width = '1920px';
-      clone.style.position = 'absolute';
-      clone.style.left = '-9999px';
-      document.body.appendChild(clone);
-
-      const canvas = await html2canvas(clone, {
+      const canvas = await html2canvas(timelineRef.current, {
         width: 1920,
+        height: timelineRef.current.offsetHeight,
         scale: 2,
         backgroundColor: '#ffffff',
         useCORS: true,
-        logging: true
+        logging: false,
+        onclone: (clonedDoc) => {
+          const timeline = clonedDoc.querySelector('[data-timeline]');
+          if (timeline) {
+            timeline.setAttribute('style', 'width: 1920px; height: auto;');
+          }
+        }
       });
-      
-      document.body.removeChild(clone);
       
       const link = document.createElement('a');
       link.download = 'timeline.png';
@@ -117,42 +115,32 @@ export const Timeline = ({ data }: TimelineProps) => {
       </div>
 
       {/* Timeline */}
-      <div className="border rounded-lg shadow-sm overflow-hidden" style={{ width: '1920px' }}>
+      <div className="border rounded-lg shadow-sm" style={{ width: '1920px' }}>
         <div ref={containerRef} className="overflow-x-auto">
-          <div ref={timelineRef} className="min-w-max" style={{ width: '1920px' }}>
+          <div ref={timelineRef} data-timeline className="min-w-max" style={{ width: '1920px' }}>
             {/* Timeline rows */}
             {features.map((feature, rowIndex) => {
               if (rowIndex === 0) return null;
               
               const isMusicRow = feature.toLowerCase() === 'musica';
+              const isColorRow = feature.toLowerCase() === 'colore';
               
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
-                  <div className="w-40 p-4 font-medium truncate">
+                  <div className="w-40 p-4 font-medium truncate border-r">
                     {feature}
                   </div>
                   <div className="flex flex-1">
                     {isMusicRow ? (
-                      <>
-                        <div className="w-[100px] h-16 border-l flex items-center justify-center">
-                          <TimelineCell
-                            rowIndex={rowIndex}
-                            feature={feature}
-                            value={data[rowIndex][1]}
-                            colIndex={1}
-                            featureColors={featureColors}
-                          />
-                        </div>
-                        <div className="flex-1 h-16 border-l flex items-center">
-                          <TimelineCell
-                            rowIndex={rowIndex}
-                            feature={feature}
-                            value={data[rowIndex][1]}
-                            colIndex={1}
-                            featureColors={featureColors}
-                          />
-                        </div>
-                      </>
+                      <div className="flex-1 h-16 flex items-center justify-center">
+                        <TimelineCell
+                          rowIndex={rowIndex}
+                          feature={feature}
+                          value={data[rowIndex][1]}
+                          colIndex={1}
+                          featureColors={featureColors}
+                        />
+                      </div>
                     ) : (
                       data[rowIndex].slice(1).map((value, colIndex) => (
                         <div
@@ -165,14 +153,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                             value={value}
                             colIndex={colIndex}
                             featureColors={featureColors}
-                            onColorChange={
-                              feature.toLowerCase() === 'colore' 
-                                ? (color) => {
-                                    const newData = [...data];
-                                    newData[rowIndex][colIndex + 1] = color;
-                                  }
-                                : undefined
-                            }
+                            isColorCell={isColorRow}
                           />
                         </div>
                       ))
