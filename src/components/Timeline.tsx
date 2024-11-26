@@ -37,7 +37,6 @@ export const Timeline = ({ data }: TimelineProps) => {
   const handleCellColorChange = (rowIndex: number, colIndex: number, color: string) => {
     const newData = [...data];
     newData[rowIndex][colIndex + 1] = color;
-    // Update the data prop through a callback if needed
   };
 
   const downloadImage = async () => {
@@ -46,18 +45,27 @@ export const Timeline = ({ data }: TimelineProps) => {
     try {
       const canvas = await html2canvas(timelineRef.current, {
         width: 1920,
-        scale: 1,
-        backgroundColor: '#ffffff'
+        scale: 2, // Increased scale for better quality
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: true,
+        onclone: (clonedDoc) => {
+          const element = clonedDoc.querySelector('[ref="timelineRef"]');
+          if (element) {
+            element.style.width = '1920px';
+          }
+        }
       });
       
       const link = document.createElement('a');
       link.download = 'timeline.png';
-      link.href = canvas.toDataURL('image/png');
+      link.href = canvas.toDataURL('image/png', 1.0); // Maximum quality
       link.click();
       
       toast.success("Timeline downloaded successfully!");
     } catch (error) {
       toast.error("Error downloading timeline");
+      console.error(error);
     }
   };
 
@@ -68,6 +76,11 @@ export const Timeline = ({ data }: TimelineProps) => {
     if (feature.toLowerCase() === 'aroma') return 'aroma';
     if (feature.toLowerCase() === 'colore') return 'color';
     return null;
+  };
+
+  const getMusicText = (row: any[]): string => {
+    // Find the first non-empty value after the feature name
+    return row.slice(1).find(value => value) || '';
   };
 
   const renderCell = (rowIndex: number, feature: string, value: any, colIndex: number) => {
@@ -88,9 +101,10 @@ export const Timeline = ({ data }: TimelineProps) => {
         );
       case 'music':
         if (colIndex === 1) {
+          const musicText = getMusicText(data[rowIndex]);
           return (
-            <div className="col-span-full text-black bg-white px-2 py-1 rounded">
-              {value}
+            <div className="col-span-full text-black bg-white px-2 py-1 rounded w-full">
+              {musicText}
             </div>
           );
         }
@@ -187,22 +201,28 @@ export const Timeline = ({ data }: TimelineProps) => {
               if (rowIndex === 0) return null; // Skip the first feature row
               
               const specialRow = isSpecialRow(rowIndex, feature);
+              const isMusicRow = specialRow === 'music';
+              
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
                   <div className="w-40 p-4 font-medium truncate">
                     {feature}
                   </div>
-                  <div className="flex">
-                    {data[rowIndex].slice(1).map((value, colIndex) => (
-                      <div
-                        key={colIndex}
-                        className={`w-[100px] h-16 border-l flex items-center justify-center ${
-                          specialRow === 'music' ? 'col-span-full' : ''
-                        }`}
-                      >
-                        {renderCell(rowIndex, feature, value, colIndex + 1)}
+                  <div className={`flex ${isMusicRow ? 'w-full' : ''}`}>
+                    {isMusicRow ? (
+                      <div className="flex-1 p-4">
+                        {renderCell(rowIndex, feature, data[rowIndex][1], 1)}
                       </div>
-                    ))}
+                    ) : (
+                      data[rowIndex].slice(1).map((value, colIndex) => (
+                        <div
+                          key={colIndex}
+                          className="w-[100px] h-16 border-l flex items-center justify-center"
+                        >
+                          {renderCell(rowIndex, feature, value, colIndex + 1)}
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               );
