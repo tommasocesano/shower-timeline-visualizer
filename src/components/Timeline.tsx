@@ -4,6 +4,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import html2canvas from "html2canvas";
+import { TimelineCell } from "./TimelineCells";
 
 interface TimelineProps {
   data: any[][];
@@ -25,7 +26,6 @@ export const Timeline = ({ data }: TimelineProps) => {
     "aroma": "#4ADE80",
     "colore": "#A78BFA",
   });
-  const [colorPickerCell, setColorPickerCell] = useState<{row: number; col: number} | null>(null);
 
   const handleColorChange = (feature: string, color: string) => {
     setFeatureColors(prev => ({
@@ -34,104 +34,36 @@ export const Timeline = ({ data }: TimelineProps) => {
     }));
   };
 
-  const handleCellColorChange = (rowIndex: number, colIndex: number, color: string) => {
-    const newData = [...data];
-    newData[rowIndex][colIndex + 1] = color;
-  };
-
   const downloadImage = async () => {
     if (!timelineRef.current) return;
     
     try {
-      const canvas = await html2canvas(timelineRef.current, {
+      // Create a clone of the timeline element
+      const clone = timelineRef.current.cloneNode(true) as HTMLElement;
+      clone.style.width = '1920px';
+      clone.style.position = 'absolute';
+      clone.style.left = '-9999px';
+      document.body.appendChild(clone);
+
+      const canvas = await html2canvas(clone, {
         width: 1920,
-        scale: 2, // Increased scale for better quality
+        scale: 2,
         backgroundColor: '#ffffff',
         useCORS: true,
-        logging: true,
-        onclone: (clonedDoc) => {
-          const element = clonedDoc.querySelector('[ref="timelineRef"]');
-          if (element) {
-            element.style.width = '1920px';
-          }
-        }
+        logging: true
       });
+      
+      document.body.removeChild(clone);
       
       const link = document.createElement('a');
       link.download = 'timeline.png';
-      link.href = canvas.toDataURL('image/png', 1.0); // Maximum quality
+      link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
       
       toast.success("Timeline downloaded successfully!");
     } catch (error) {
       toast.error("Error downloading timeline");
       console.error(error);
-    }
-  };
-
-  const isSpecialRow = (rowIndex: number, feature: string): string | null => {
-    if (rowIndex === 0) return 'duration';
-    if (rowIndex === 1) return 'temperature';
-    if (feature.toLowerCase() === 'musica') return 'music';
-    if (feature.toLowerCase() === 'aroma') return 'aroma';
-    if (feature.toLowerCase() === 'colore') return 'color';
-    return null;
-  };
-
-  const getMusicText = (row: any[]): string => {
-    // Find the first non-empty value after the feature name
-    return row.slice(1).find(value => value) || '';
-  };
-
-  const renderCell = (rowIndex: number, feature: string, value: any, colIndex: number) => {
-    const specialRow = isSpecialRow(rowIndex, feature);
-    
-    switch (specialRow) {
-      case 'duration':
-        return (
-          <div className="text-black bg-white px-2 py-1 rounded">
-            {value}s
-          </div>
-        );
-      case 'temperature':
-        return (
-          <div className="text-black bg-white px-2 py-1 rounded">
-            {value}°C
-          </div>
-        );
-      case 'music':
-        if (colIndex === 1) {
-          const musicText = getMusicText(data[rowIndex]);
-          return (
-            <div className="col-span-full text-black bg-white px-2 py-1 rounded w-full">
-              {musicText}
-            </div>
-          );
-        }
-        return null;
-      case 'aroma':
-        return value ? (
-          <div className="text-black px-2 py-1">
-            {value}
-          </div>
-        ) : null;
-      case 'color':
-        return (
-          <div 
-            className="w-[90%] h-[80%] rounded shadow-sm cursor-pointer"
-            style={{ backgroundColor: value || '#ffffff' }}
-            onClick={() => setColorPickerCell({ row: rowIndex, col: colIndex })}
-            title={`Color: ${value}`}
-          />
-        );
-      default:
-        return value ? (
-          <div 
-            className="w-[90%] h-[80%] rounded shadow-sm animate-fade-in"
-            style={{ backgroundColor: featureColors[feature.toLowerCase()] }}
-            title={`${feature} - Step ${colIndex + 1}`}
-          />
-        ) : null;
     }
   };
 
@@ -154,15 +86,14 @@ export const Timeline = ({ data }: TimelineProps) => {
   }
 
   const features = data.map((row) => row[0]).filter(Boolean);
-  const steps = data[0]?.slice(1).length || 0;
 
   return (
     <div className="space-y-4 font-['Sarabun']">
       {/* Color controls */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
         {features.map((feature, index) => {
-          const specialRow = isSpecialRow(index, feature);
-          if (specialRow || index === 0) return null;
+          if (index <= 1 || feature.toLowerCase() === 'musica' || 
+              feature.toLowerCase() === 'aroma' || feature.toLowerCase() === 'colore') return null;
           
           return (
             <div key={feature} className="space-y-2">
@@ -187,39 +118,62 @@ export const Timeline = ({ data }: TimelineProps) => {
 
       {/* Timeline */}
       <div className="border rounded-lg shadow-sm overflow-hidden" style={{ width: '1920px' }}>
-        <div 
-          ref={containerRef}
-          className="overflow-x-auto"
-        >
-          <div 
-            ref={timelineRef}
-            className="min-w-max"
-            style={{ width: '1920px' }}
-          >
+        <div ref={containerRef} className="overflow-x-auto">
+          <div ref={timelineRef} className="min-w-max" style={{ width: '1920px' }}>
             {/* Timeline rows */}
             {features.map((feature, rowIndex) => {
-              if (rowIndex === 0) return null; // Skip the first feature row
+              if (rowIndex === 0) return null;
               
-              const specialRow = isSpecialRow(rowIndex, feature);
-              const isMusicRow = specialRow === 'music';
+              const isMusicRow = feature.toLowerCase() === 'musica';
               
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
                   <div className="w-40 p-4 font-medium truncate">
                     {feature}
                   </div>
-                  <div className={`flex ${isMusicRow ? 'w-full' : ''}`}>
+                  <div className="flex flex-1">
                     {isMusicRow ? (
-                      <div className="flex-1 p-4">
-                        {renderCell(rowIndex, feature, data[rowIndex][1], 1)}
-                      </div>
+                      <>
+                        <div className="w-[100px] h-16 border-l flex items-center justify-center">
+                          <TimelineCell
+                            rowIndex={rowIndex}
+                            feature={feature}
+                            value={data[rowIndex][1]}
+                            colIndex={1}
+                            featureColors={featureColors}
+                          />
+                        </div>
+                        <div className="flex-1 h-16 border-l flex items-center">
+                          <TimelineCell
+                            rowIndex={rowIndex}
+                            feature={feature}
+                            value={data[rowIndex][1]}
+                            colIndex={1}
+                            featureColors={featureColors}
+                          />
+                        </div>
+                      </>
                     ) : (
                       data[rowIndex].slice(1).map((value, colIndex) => (
                         <div
                           key={colIndex}
                           className="w-[100px] h-16 border-l flex items-center justify-center"
                         >
-                          {renderCell(rowIndex, feature, value, colIndex + 1)}
+                          <TimelineCell
+                            rowIndex={rowIndex}
+                            feature={feature}
+                            value={value}
+                            colIndex={colIndex}
+                            featureColors={featureColors}
+                            onColorChange={
+                              feature.toLowerCase() === 'colore' 
+                                ? (color) => {
+                                    const newData = [...data];
+                                    newData[rowIndex][colIndex + 1] = color;
+                                  }
+                                : undefined
+                            }
+                          />
                         </div>
                       ))
                     )}
@@ -230,22 +184,6 @@ export const Timeline = ({ data }: TimelineProps) => {
           </div>
         </div>
       </div>
-
-      {/* Color Picker Modal */}
-      {colorPickerCell && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg">
-            <Label>Select Color</Label>
-            <Input
-              type="color"
-              value={data[colorPickerCell.row][colorPickerCell.col + 1] || '#ffffff'}
-              onChange={(e) => handleCellColorChange(colorPickerCell.row, colorPickerCell.col, e.target.value)}
-              className="h-10 w-full mb-4"
-            />
-            <Button onClick={() => setColorPickerCell(null)}>Close</Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
