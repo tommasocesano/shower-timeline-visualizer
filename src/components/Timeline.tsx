@@ -28,13 +28,22 @@ export const Timeline = ({ data }: TimelineProps) => {
     "colore": "#A78BFA",
   });
 
+  const FIXED_COLUMN_WIDTH = 160; // Width of the first column
+
   // Calculate suggested width based on number of steps
   const calculateSuggestedWidth = () => {
     if (!data || data.length === 0) return 1920;
     const numberOfSteps = data[0].length - 1; // Subtract 1 for the feature column
-    const fixedColumnWidth = 160; // Width of the first column
-    const stepColumnWidth = 100; // Width per step column
-    return fixedColumnWidth + (numberOfSteps * stepColumnWidth);
+    const minStepWidth = 80; // Minimum width per step
+    return FIXED_COLUMN_WIDTH + (numberOfSteps * minStepWidth);
+  };
+
+  // Calculate the dynamic width for each step column
+  const calculateStepWidth = () => {
+    if (!data || data.length === 0) return 100;
+    const numberOfSteps = data[0].length - 1;
+    const remainingWidth = downloadWidth - FIXED_COLUMN_WIDTH;
+    return `${remainingWidth / numberOfSteps}px`;
   };
 
   useEffect(() => {
@@ -175,7 +184,7 @@ export const Timeline = ({ data }: TimelineProps) => {
               
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
-                  <div className="w-40 p-4 font-medium truncate border-r">
+                  <div className="p-4 font-medium truncate border-r" style={{ width: `${FIXED_COLUMN_WIDTH}px`, minWidth: `${FIXED_COLUMN_WIDTH}px`, flexShrink: 0 }}>
                     {feature}
                   </div>
                   <div className="flex flex-1">
@@ -193,8 +202,11 @@ export const Timeline = ({ data }: TimelineProps) => {
                       data[rowIndex].slice(1).map((value, colIndex) => (
                         <div
                           key={colIndex}
-                          className="flex-1 h-16 border-l flex items-center justify-center"
-                          style={{ minWidth: '100px' }}
+                          className="h-16 border-l flex items-center justify-center"
+                          style={{ 
+                            width: calculateStepWidth(),
+                            minWidth: calculateStepWidth()
+                          }}
                         >
                           <TimelineCell
                             rowIndex={rowIndex}
