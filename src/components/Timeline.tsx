@@ -28,6 +28,23 @@ export const Timeline = ({ data }: TimelineProps) => {
     "colore": "#A78BFA",
   });
 
+  // Calculate suggested width based on number of steps
+  const calculateSuggestedWidth = () => {
+    if (!data || data.length === 0) return 1920;
+    const numberOfSteps = data[0].length - 1; // Subtract 1 for the feature column
+    const fixedColumnWidth = 160; // Width of the first column
+    const stepColumnWidth = 100; // Width per step column
+    return fixedColumnWidth + (numberOfSteps * stepColumnWidth);
+  };
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const suggestedWidth = calculateSuggestedWidth();
+      setDownloadWidth(suggestedWidth);
+      toast.success(`Suggested download width set to ${suggestedWidth}px`);
+    }
+  }, [data]);
+
   const handleColorChange = (feature: string, color: string) => {
     setFeatureColors(prev => ({
       ...prev,
@@ -132,6 +149,9 @@ export const Timeline = ({ data }: TimelineProps) => {
               step={100}
               className="h-10"
             />
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Suggested width: {calculateSuggestedWidth()}px
           </div>
         </div>
         <div className="flex gap-2">
