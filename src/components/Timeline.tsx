@@ -17,6 +17,7 @@ interface FeatureColor {
 export const Timeline = ({ data }: TimelineProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
+  const [downloadWidth, setDownloadWidth] = useState<number>(1920);
   const [featureColors, setFeatureColors] = useState<FeatureColor>({
     "pioggia interna": "#0EA5E9",
     "nebulizzazione": "#22D3EE",
@@ -34,33 +35,43 @@ export const Timeline = ({ data }: TimelineProps) => {
     }));
   };
 
-  const downloadImage = async () => {
+  const downloadImage = async (format: 'png' | 'svg') => {
     if (!timelineRef.current) return;
     
     try {
-      const canvas = await html2canvas(timelineRef.current, {
-        width: 1920,
-        height: timelineRef.current.offsetHeight,
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        logging: false,
-        onclone: (clonedDoc) => {
-          const timeline = clonedDoc.querySelector('[data-timeline]');
-          if (timeline) {
-            timeline.setAttribute('style', 'width: 1920px; height: auto;');
+      if (format === 'svg') {
+        const svgData = new XMLSerializer().serializeToString(timelineRef.current);
+        const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(svgBlob);
+        link.download = 'timeline.svg';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      } else {
+        const canvas = await html2canvas(timelineRef.current, {
+          width: downloadWidth,
+          height: timelineRef.current.offsetHeight,
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false,
+          onclone: (clonedDoc) => {
+            const timeline = clonedDoc.querySelector('[data-timeline]');
+            if (timeline) {
+              timeline.setAttribute('style', `width: ${downloadWidth}px; height: auto;`);
+            }
           }
-        }
-      });
+        });
+        
+        const link = document.createElement('a');
+        link.download = 'timeline.png';
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+      }
       
-      const link = document.createElement('a');
-      link.download = 'timeline.png';
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
-      
-      toast.success("Timeline downloaded successfully!");
+      toast.success(`Timeline downloaded successfully as ${format.toUpperCase()}!`);
     } catch (error) {
-      toast.error("Error downloading timeline");
+      toast.error(`Error downloading timeline as ${format.toUpperCase()}`);
       console.error(error);
     }
   };
@@ -108,20 +119,37 @@ export const Timeline = ({ data }: TimelineProps) => {
         })}
       </div>
 
-      <div className="flex justify-end">
-        <Button onClick={downloadImage} variant="outline">
-          Download PNG
-        </Button>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <div className="w-48">
+            <Label htmlFor="download-width">Download Width (px)</Label>
+            <Input
+              id="download-width"
+              type="number"
+              value={downloadWidth}
+              onChange={(e) => setDownloadWidth(Number(e.target.value))}
+              min={800}
+              step={100}
+              className="h-10"
+            />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={() => downloadImage('svg')} variant="outline">
+            Download SVG
+          </Button>
+          <Button onClick={() => downloadImage('png')} variant="outline">
+            Download PNG
+          </Button>
+        </div>
       </div>
 
       {/* Timeline */}
-      <div className="border rounded-lg shadow-sm" style={{ width: '1920px' }}>
+      <div className="border rounded-lg shadow-sm" style={{ width: '100%' }}>
         <div ref={containerRef} className="overflow-x-auto">
-          <div ref={timelineRef} data-timeline className="min-w-max" style={{ width: '1920px' }}>
+          <div ref={timelineRef} data-timeline className="min-w-max" style={{ width: '100%' }}>
             {/* Timeline rows */}
             {features.map((feature, rowIndex) => {
-              if (rowIndex === 0) return null;
-              
               const isMusicRow = feature.toLowerCase() === 'musica';
               const isColorRow = feature.toLowerCase() === 'colore';
               
@@ -145,7 +173,8 @@ export const Timeline = ({ data }: TimelineProps) => {
                       data[rowIndex].slice(1).map((value, colIndex) => (
                         <div
                           key={colIndex}
-                          className="w-[100px] h-16 border-l flex items-center justify-center"
+                          className="flex-1 h-16 border-l flex items-center justify-center"
+                          style={{ minWidth: '100px' }}
                         >
                           <TimelineCell
                             rowIndex={rowIndex}

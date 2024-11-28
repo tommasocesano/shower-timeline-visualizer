@@ -47,12 +47,15 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
         </div>
       ) : null;
     case 'color':
-      return value && value.startsWith('#') ? (
-        <div 
-          className="w-[90%] h-[80%] rounded shadow-sm"
-          style={{ backgroundColor: value }}
-        />
-      ) : null;
+      if (value && value.startsWith('#')) {
+        return (
+          <div 
+            className="w-[90%] h-[80%] rounded shadow-sm"
+            style={{ backgroundColor: value }}
+          />
+        );
+      }
+      return null;
     default:
       return value ? (
         <div 
