@@ -59,8 +59,11 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
     default:
       return value ? (
         <div 
-          className="w-[90%] h-[80%] rounded shadow-sm animate-fade-in flex items-center justify-center"
-          style={{ backgroundColor: featureColors[feature.toLowerCase()] }}
+          className="w-[90%] h-[80%] rounded shadow-sm animate-fade-in"
+          style={{ 
+            backgroundColor: featureColors[feature.toLowerCase()],
+            opacity: 1 // Ensure solid color
+          }}
           title={`${feature} - Step ${colIndex + 1}`}
         />
       ) : null;
