@@ -43,7 +43,13 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
       ) : null;
     case 'aroma':
       return value ? (
-        <div className="text-black px-2 py-1">
+        <div 
+          className="text-black px-2 py-1 flex items-center justify-center h-full"
+          style={{
+            transform: 'rotate(-90deg)',
+            whiteSpace: 'nowrap'
+          }}
+        >
           {value}
         </div>
       ) : null;

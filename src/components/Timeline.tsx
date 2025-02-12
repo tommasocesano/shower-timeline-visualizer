@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
@@ -210,7 +209,7 @@ export const Timeline = ({ data }: TimelineProps) => {
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
                   <div 
-                    className={`p-4 font-medium truncate border-r flex items-center ${isAromaRow ? 'justify-center' : ''}`} 
+                    className={`p-4 font-medium truncate border-r flex items-center`} 
                     style={{ 
                       width: `${FIXED_COLUMN_WIDTH}px`, 
                       minWidth: `${FIXED_COLUMN_WIDTH}px`,
@@ -218,15 +217,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                       flexShrink: 0 
                     }}
                   >
-                    <span 
-                      style={{
-                        transform: isAromaRow ? 'rotate(-90deg)' : 'none',
-                        whiteSpace: 'nowrap',
-                        display: 'block'
-                      }}
-                    >
-                      {feature}
-                    </span>
+                    {feature}
                   </div>
                   <div className="flex flex-1">
                     {isMusicRow ? (
