@@ -122,6 +122,9 @@ export const Timeline = ({ data }: TimelineProps) => {
 
   const features = data.map((row) => row[0]).filter(Boolean);
 
+  // Calculate the index of the penultimate row
+  const penultimateRowIndex = features.length - 2;
+
   return (
     <div className="space-y-4 font-['Sarabun']">
       {/* Color controls */}
@@ -181,10 +184,17 @@ export const Timeline = ({ data }: TimelineProps) => {
             {features.map((feature, rowIndex) => {
               const isMusicRow = feature.toLowerCase() === 'musica';
               const isColorRow = feature.toLowerCase() === 'colore';
+              const isPenultimate = rowIndex === penultimateRowIndex;
               
               return (
-                <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
-                  <div className="p-4 font-medium truncate border-r" style={{ width: `${FIXED_COLUMN_WIDTH}px`, minWidth: `${FIXED_COLUMN_WIDTH}px`, flexShrink: 0 }}>
+                <div 
+                  key={rowIndex} 
+                  className={`flex border-b last:border-b-0 hover:bg-gray-50 ${isPenultimate ? 'rotated-row' : ''}`}
+                >
+                  <div 
+                    className={`p-4 font-medium truncate border-r ${isPenultimate ? 'rotated-text' : ''}`} 
+                    style={{ width: `${FIXED_COLUMN_WIDTH}px`, minWidth: `${FIXED_COLUMN_WIDTH}px`, flexShrink: 0 }}
+                  >
                     {feature}
                   </div>
                   <div className="flex flex-1">
@@ -196,6 +206,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                           value={data[rowIndex][1]}
                           colIndex={1}
                           featureColors={featureColors}
+                          isPenultimateRow={isPenultimate}
                         />
                       </div>
                     ) : (
@@ -215,6 +226,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                             colIndex={colIndex}
                             featureColors={featureColors}
                             isColorCell={isColorRow}
+                            isPenultimateRow={isPenultimate}
                           />
                         </div>
                       ))

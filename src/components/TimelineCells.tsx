@@ -1,3 +1,4 @@
+
 import { Input } from "./ui/input";
 
 interface CellProps {
@@ -7,9 +8,10 @@ interface CellProps {
   colIndex: number;
   featureColors: Record<string, string>;
   isColorCell?: boolean;
+  isPenultimateRow?: boolean;
 }
 
-export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors, isColorCell }: CellProps) => {
+export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors, isColorCell, isPenultimateRow }: CellProps) => {
   const isSpecialRow = (rowIndex: number, feature: string): string | null => {
     if (rowIndex === 0) return 'duration';
     if (rowIndex === 1) return 'temperature';
@@ -36,13 +38,13 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
       );
     case 'music':
       return value ? (
-        <div className="text-black px-2 py-1 text-center w-full">
+        <div className={`text-black px-2 py-1 text-center w-full ${isPenultimateRow ? 'rotated-text' : ''}`}>
           {value}
         </div>
       ) : null;
     case 'aroma':
       return value ? (
-        <div className="text-black px-2 py-1">
+        <div className={`text-black px-2 py-1 ${isPenultimateRow ? 'rotated-text' : ''}`}>
           {value}
         </div>
       ) : null;
@@ -71,3 +73,4 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
       ) : null;
   }
 };
+
