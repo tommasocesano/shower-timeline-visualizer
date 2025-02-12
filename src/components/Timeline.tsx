@@ -205,11 +205,28 @@ export const Timeline = ({ data }: TimelineProps) => {
             {features.map((feature, rowIndex) => {
               const isMusicRow = feature.toLowerCase() === 'musica';
               const isColorRow = feature.toLowerCase() === 'colore';
+              const isAromaRow = feature.toLowerCase() === 'aroma';
               
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
-                  <div className="p-4 font-medium truncate border-r" style={{ width: `${FIXED_COLUMN_WIDTH}px`, minWidth: `${FIXED_COLUMN_WIDTH}px`, flexShrink: 0 }}>
-                    {feature}
+                  <div 
+                    className={`p-4 font-medium truncate border-r flex items-center ${isAromaRow ? 'justify-center' : ''}`} 
+                    style={{ 
+                      width: `${FIXED_COLUMN_WIDTH}px`, 
+                      minWidth: `${FIXED_COLUMN_WIDTH}px`,
+                      height: isAromaRow ? `calc(${fontSize * 5}px + 20px)` : 'auto',
+                      flexShrink: 0 
+                    }}
+                  >
+                    <span 
+                      style={{
+                        transform: isAromaRow ? 'rotate(-90deg)' : 'none',
+                        whiteSpace: 'nowrap',
+                        display: 'block'
+                      }}
+                    >
+                      {feature}
+                    </span>
                   </div>
                   <div className="flex flex-1">
                     {isMusicRow ? (
@@ -229,7 +246,8 @@ export const Timeline = ({ data }: TimelineProps) => {
                           className="h-16 border-l flex items-center justify-center"
                           style={{ 
                             width: calculateStepWidth(),
-                            minWidth: calculateStepWidth()
+                            minWidth: calculateStepWidth(),
+                            height: isAromaRow ? `calc(${fontSize * 5}px + 20px)` : '64px'
                           }}
                         >
                           <TimelineCell
