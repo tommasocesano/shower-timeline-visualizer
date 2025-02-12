@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
@@ -18,6 +19,7 @@ export const Timeline = ({ data }: TimelineProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const [downloadWidth, setDownloadWidth] = useState<number>(1920);
+  const [fontSize, setFontSize] = useState<number>(14); // Default font size
   const [featureColors, setFeatureColors] = useState<FeatureColor>({
     "pioggia interna": "#0EA5E9",
     "nebulizzazione": "#22D3EE",
@@ -28,22 +30,30 @@ export const Timeline = ({ data }: TimelineProps) => {
     "colore": "#A78BFA",
   });
 
-  const FIXED_COLUMN_WIDTH = 160; // Width of the first column
+  const FIXED_COLUMN_WIDTH = 160;
 
-  // Calculate suggested width based on number of steps
   const calculateSuggestedWidth = () => {
     if (!data || data.length === 0) return 1920;
-    const numberOfSteps = data[0].length - 1; // Subtract 1 for the feature column
-    const minStepWidth = 80; // Minimum width per step
+    const numberOfSteps = data[0].length - 1;
+    const minStepWidth = 80;
     return FIXED_COLUMN_WIDTH + (numberOfSteps * minStepWidth);
   };
 
-  // Calculate the dynamic width for each step column
   const calculateStepWidth = () => {
     if (!data || data.length === 0) return 100;
     const numberOfSteps = data[0].length - 1;
     const remainingWidth = downloadWidth - FIXED_COLUMN_WIDTH;
     return `${remainingWidth / numberOfSteps}px`;
+  };
+
+  const handleFontSizeChange = (value: string) => {
+    const size = parseInt(value);
+    if (size >= 1 && size <= 20) {
+      setFontSize(size);
+      toast.success(`Font size updated to ${size}px`);
+    } else {
+      toast.error("Font size must be between 1 and 20");
+    }
   };
 
   useEffect(() => {
@@ -124,8 +134,22 @@ export const Timeline = ({ data }: TimelineProps) => {
 
   return (
     <div className="space-y-4 font-['Sarabun']">
-      {/* Color controls */}
+      {/* Controls section */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+        {/* Font size control */}
+        <div className="space-y-2">
+          <Label htmlFor="font-size">Font Size (1-20)</Label>
+          <Input
+            id="font-size"
+            type="number"
+            value={fontSize}
+            onChange={(e) => handleFontSizeChange(e.target.value)}
+            min={1}
+            max={20}
+            className="h-10"
+          />
+        </div>
+        {/* Color controls */}
         {features.map((feature, index) => {
           if (index <= 1 || feature.toLowerCase() === 'musica' || 
               feature.toLowerCase() === 'aroma' || feature.toLowerCase() === 'colore') return null;
@@ -176,7 +200,7 @@ export const Timeline = ({ data }: TimelineProps) => {
       {/* Timeline */}
       <div className="border rounded-lg shadow-sm" style={{ width: '100%' }}>
         <div ref={containerRef} className="overflow-x-auto">
-          <div ref={timelineRef} data-timeline className="min-w-max" style={{ width: '100%' }}>
+          <div ref={timelineRef} data-timeline className="min-w-max" style={{ width: '100%', fontSize: `${fontSize}px` }}>
             {/* Timeline rows */}
             {features.map((feature, rowIndex) => {
               const isMusicRow = feature.toLowerCase() === 'musica';
