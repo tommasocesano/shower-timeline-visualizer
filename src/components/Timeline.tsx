@@ -213,45 +213,33 @@ export const Timeline = ({ data }: TimelineProps) => {
                     style={{ 
                       width: `${FIXED_COLUMN_WIDTH}px`, 
                       minWidth: `${FIXED_COLUMN_WIDTH}px`,
-                      height: isAromaRow ? `calc(${fontSize * 5}px + 20px)` : 'auto',
+                      height: (isAromaRow || isMusicRow) ? `calc(${fontSize * 5}px + 20px)` : 'auto',
                       flexShrink: 0 
                     }}
                   >
                     {feature}
                   </div>
                   <div className="flex flex-1">
-                    {isMusicRow ? (
-                      <div className="flex-1 h-16 flex items-center justify-center">
+                    {data[rowIndex].slice(1).map((value, colIndex) => (
+                      <div
+                        key={colIndex}
+                        className="h-16 border-l flex items-center justify-center"
+                        style={{ 
+                          width: calculateStepWidth(),
+                          minWidth: calculateStepWidth(),
+                          height: (isAromaRow || isMusicRow) ? `calc(${fontSize * 5}px + 20px)` : '64px'
+                        }}
+                      >
                         <TimelineCell
                           rowIndex={rowIndex}
                           feature={feature}
-                          value={data[rowIndex][1]}
-                          colIndex={1}
+                          value={value}
+                          colIndex={colIndex}
                           featureColors={featureColors}
+                          isColorCell={isColorRow}
                         />
                       </div>
-                    ) : (
-                      data[rowIndex].slice(1).map((value, colIndex) => (
-                        <div
-                          key={colIndex}
-                          className="h-16 border-l flex items-center justify-center"
-                          style={{ 
-                            width: calculateStepWidth(),
-                            minWidth: calculateStepWidth(),
-                            height: isAromaRow ? `calc(${fontSize * 5}px + 20px)` : '64px'
-                          }}
-                        >
-                          <TimelineCell
-                            rowIndex={rowIndex}
-                            feature={feature}
-                            value={value}
-                            colIndex={colIndex}
-                            featureColors={featureColors}
-                            isColorCell={isColorRow}
-                          />
-                        </div>
-                      ))
-                    )}
+                    ))}
                   </div>
                 </div>
               );
