@@ -121,6 +121,25 @@ export const Timeline = ({ data }: TimelineProps) => {
     toast.success("Timeline updated!");
   }, [data]);
 
+  const getLongestTextInRow = (rowData: any[]) => {
+    return Math.max(...rowData.slice(1).map(text => text?.toString().length || 0));
+  };
+
+  const calculateRowHeight = (feature: string, rowIndex: number) => {
+    const isMusicRow = feature.toLowerCase() === 'musica';
+    const isAromaRow = feature.toLowerCase() === 'aroma';
+
+    if (isMusicRow) {
+      const longestText = getLongestTextInRow(data[rowIndex]);
+      return `calc(${Math.max(longestText * fontSize * 0.7, fontSize * 4)}px + 36px)`;
+    }
+    if (isAromaRow) {
+      const longestText = getLongestTextInRow(data[rowIndex]);
+      return `calc(${Math.max(longestText * fontSize * 0.7, fontSize * 4)}px + 36px)`;
+    }
+    return '64px';
+  };
+
   if (!data || data.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -206,12 +225,7 @@ export const Timeline = ({ data }: TimelineProps) => {
               const isColorRow = feature.toLowerCase() === 'colore';
               const isAromaRow = feature.toLowerCase() === 'aroma';
               
-              const calculateRowHeight = () => {
-                if (isMusicRow || isAromaRow) {
-                  return `calc(${fontSize * 7}px + 36px)`;
-                }
-                return '64px';
-              };
+              const rowHeight = calculateRowHeight(feature, rowIndex);
               
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
@@ -220,7 +234,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                     style={{ 
                       width: `${FIXED_COLUMN_WIDTH}px`, 
                       minWidth: `${FIXED_COLUMN_WIDTH}px`,
-                      height: calculateRowHeight(),
+                      height: rowHeight,
                       flexShrink: 0 
                     }}
                   >
@@ -234,7 +248,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                         style={{ 
                           width: calculateStepWidth(),
                           minWidth: calculateStepWidth(),
-                          height: calculateRowHeight()
+                          height: rowHeight
                         }}
                       >
                         <TimelineCell
