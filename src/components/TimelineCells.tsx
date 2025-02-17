@@ -32,7 +32,7 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
     case 'temperature':
       return (
         <div className="text-black bg-white px-2 py-1 rounded">
-          {value}°C
+          {value}°
         </div>
       );
     case 'music':
