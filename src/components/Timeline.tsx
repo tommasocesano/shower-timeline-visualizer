@@ -206,6 +206,13 @@ export const Timeline = ({ data }: TimelineProps) => {
               const isColorRow = feature.toLowerCase() === 'colore';
               const isAromaRow = feature.toLowerCase() === 'aroma';
               
+              const calculateRowHeight = () => {
+                if (isMusicRow || isAromaRow) {
+                  return `calc(${fontSize * 7}px + 36px)`;
+                }
+                return '64px';
+              };
+              
               return (
                 <div key={rowIndex} className="flex border-b last:border-b-0 hover:bg-gray-50">
                   <div 
@@ -213,7 +220,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                     style={{ 
                       width: `${FIXED_COLUMN_WIDTH}px`, 
                       minWidth: `${FIXED_COLUMN_WIDTH}px`,
-                      height: (isAromaRow || isMusicRow) ? `calc(${fontSize * 5}px + 20px)` : 'auto',
+                      height: calculateRowHeight(),
                       flexShrink: 0 
                     }}
                   >
@@ -223,11 +230,11 @@ export const Timeline = ({ data }: TimelineProps) => {
                     {data[rowIndex].slice(1).map((value, colIndex) => (
                       <div
                         key={colIndex}
-                        className="h-16 border-l flex items-center justify-center"
+                        className="border-l flex items-center justify-center"
                         style={{ 
                           width: calculateStepWidth(),
                           minWidth: calculateStepWidth(),
-                          height: (isAromaRow || isMusicRow) ? `calc(${fontSize * 5}px + 20px)` : '64px'
+                          height: calculateRowHeight()
                         }}
                       >
                         <TimelineCell

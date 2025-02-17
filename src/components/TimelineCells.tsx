@@ -42,9 +42,8 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
           style={{
             transform: 'rotate(-90deg)',
             whiteSpace: 'nowrap',
-            padding: '8px',
-            marginTop: '8px',
-            marginBottom: '8px'
+            padding: '12px',
+            margin: '8px'
           }}
         >
           {value}
@@ -53,10 +52,12 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
     case 'aroma':
       return value ? (
         <div 
-          className="text-black px-2 py-1 flex items-center justify-center h-full"
+          className="text-black flex items-center justify-center h-full w-full"
           style={{
             transform: 'rotate(-90deg)',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            padding: '12px',
+            margin: '8px'
           }}
         >
           {value}
