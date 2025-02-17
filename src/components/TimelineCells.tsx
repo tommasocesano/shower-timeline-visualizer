@@ -38,11 +38,13 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
     case 'music':
       return value ? (
         <div 
-          className="text-black flex items-center justify-center h-full"
+          className="text-black flex items-center justify-center h-full w-full"
           style={{
             transform: 'rotate(-90deg)',
             whiteSpace: 'nowrap',
-            padding: '8px'
+            padding: '8px',
+            marginTop: '8px',
+            marginBottom: '8px'
           }}
         >
           {value}
