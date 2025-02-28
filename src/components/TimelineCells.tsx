@@ -14,9 +14,13 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
   const isSpecialRow = (rowIndex: number, feature: string): string | null => {
     if (rowIndex === 0) return 'duration';
     if (rowIndex === 1) return 'temperature';
-    if (feature.toLowerCase() === 'musica') return 'music';
-    if (feature.toLowerCase() === 'aroma') return 'aroma';
-    if (feature.toLowerCase() === 'colore') return 'color';
+    
+    // Check for both English and Italian names for special rows
+    const lowerFeature = feature.toLowerCase();
+    if (lowerFeature === 'musica' || lowerFeature === 'music') return 'music';
+    if (lowerFeature === 'aroma' || lowerFeature === 'scent') return 'aroma';
+    if (lowerFeature === 'colore' || lowerFeature === 'color') return 'color';
+    
     return null;
   };
 
