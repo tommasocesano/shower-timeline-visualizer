@@ -126,8 +126,9 @@ export const Timeline = ({ data }: TimelineProps) => {
   };
 
   const calculateRowHeight = (feature: string, rowIndex: number) => {
-    const isMusicRow = feature.toLowerCase() === 'musica';
-    const isAromaRow = feature.toLowerCase() === 'aroma';
+    const lowerFeature = feature.toLowerCase();
+    const isMusicRow = lowerFeature === 'musica' || lowerFeature === 'music';
+    const isAromaRow = lowerFeature === 'aroma' || lowerFeature === 'scent';
 
     if (isMusicRow) {
       const longestText = getLongestTextInRow(data[rowIndex]);
