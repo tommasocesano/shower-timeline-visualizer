@@ -19,6 +19,8 @@ export const Timeline = ({ data }: TimelineProps) => {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [downloadWidth, setDownloadWidth] = useState<number>(1920);
   const [fontSize, setFontSize] = useState<number>(14); // Default font size
+  const [regularRowHeight, setRegularRowHeight] = useState<number>(64); // Default regular row height
+  const [specialRowPadding, setSpecialRowPadding] = useState<number>(36); // Default padding for special rows
   const [featureColors, setFeatureColors] = useState<FeatureColor>({
     "pioggia interna": "#0EA5E9",
     "nebulizzazione": "#22D3EE",
@@ -52,6 +54,26 @@ export const Timeline = ({ data }: TimelineProps) => {
       toast.success(`Font size updated to ${size}px`);
     } else {
       toast.error("Font size must be between 1 and 20");
+    }
+  };
+
+  const handleRegularRowHeightChange = (value: string) => {
+    const height = parseInt(value);
+    if (height >= 30 && height <= 200) {
+      setRegularRowHeight(height);
+      toast.success(`Regular row height updated to ${height}px`);
+    } else {
+      toast.error("Regular row height must be between 30 and 200px");
+    }
+  };
+
+  const handleSpecialRowPaddingChange = (value: string) => {
+    const padding = parseInt(value);
+    if (padding >= 10 && padding <= 100) {
+      setSpecialRowPadding(padding);
+      toast.success(`Special row padding updated to ${padding}px`);
+    } else {
+      toast.error("Special row padding must be between 10 and 100px");
     }
   };
 
@@ -132,13 +154,13 @@ export const Timeline = ({ data }: TimelineProps) => {
 
     if (isMusicRow) {
       const longestText = getLongestTextInRow(data[rowIndex]);
-      return `calc(${Math.max(longestText * fontSize * 0.7, fontSize * 4)}px + 36px)`;
+      return `calc(${Math.max(longestText * fontSize * 0.7, fontSize * 4)}px + ${specialRowPadding}px)`;
     }
     if (isAromaRow) {
       const longestText = getLongestTextInRow(data[rowIndex]);
-      return `calc(${Math.max(longestText * fontSize * 0.7, fontSize * 4)}px + 36px)`;
+      return `calc(${Math.max(longestText * fontSize * 0.7, fontSize * 4)}px + ${specialRowPadding}px)`;
     }
-    return '64px';
+    return `${regularRowHeight}px`;
   };
 
   if (!data || data.length === 0) {
@@ -154,7 +176,7 @@ export const Timeline = ({ data }: TimelineProps) => {
   return (
     <div className="space-y-4 font-['Sarabun']">
       {/* Controls section */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
         {/* Font size control */}
         <div className="space-y-2">
           <Label htmlFor="font-size">Font Size (1-20)</Label>
@@ -168,10 +190,43 @@ export const Timeline = ({ data }: TimelineProps) => {
             className="h-10"
           />
         </div>
-        {/* Color controls */}
+        
+        {/* New control for regular row height */}
+        <div className="space-y-2">
+          <Label htmlFor="regular-row-height">Regular Row Height (30-200px)</Label>
+          <Input
+            id="regular-row-height"
+            type="number"
+            value={regularRowHeight}
+            onChange={(e) => handleRegularRowHeightChange(e.target.value)}
+            min={30}
+            max={200}
+            className="h-10"
+          />
+        </div>
+        
+        {/* New control for special row padding */}
+        <div className="space-y-2">
+          <Label htmlFor="special-row-padding">Special Row Padding (10-100px)</Label>
+          <Input
+            id="special-row-padding"
+            type="number"
+            value={specialRowPadding}
+            onChange={(e) => handleSpecialRowPaddingChange(e.target.value)}
+            min={10}
+            max={100}
+            className="h-10"
+          />
+        </div>
+      </div>
+
+      {/* Feature colors section */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-lg">
         {features.map((feature, index) => {
           if (index <= 1 || feature.toLowerCase() === 'musica' || 
-              feature.toLowerCase() === 'aroma' || feature.toLowerCase() === 'colore') return null;
+              feature.toLowerCase() === 'music' || feature.toLowerCase() === 'aroma' || 
+              feature.toLowerCase() === 'scent' || feature.toLowerCase() === 'colore' || 
+              feature.toLowerCase() === 'color') return null;
           
           return (
             <div key={feature} className="space-y-2">
@@ -188,6 +243,7 @@ export const Timeline = ({ data }: TimelineProps) => {
         })}
       </div>
 
+      {/* Download controls */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <div className="w-48">
@@ -222,10 +278,6 @@ export const Timeline = ({ data }: TimelineProps) => {
           <div ref={timelineRef} data-timeline className="min-w-max" style={{ width: '100%', fontSize: `${fontSize}px` }}>
             {/* Timeline rows */}
             {features.map((feature, rowIndex) => {
-              const isMusicRow = feature.toLowerCase() === 'musica';
-              const isColorRow = feature.toLowerCase() === 'colore';
-              const isAromaRow = feature.toLowerCase() === 'aroma';
-              
               const rowHeight = calculateRowHeight(feature, rowIndex);
               
               return (
@@ -258,7 +310,7 @@ export const Timeline = ({ data }: TimelineProps) => {
                           value={value}
                           colIndex={colIndex}
                           featureColors={featureColors}
-                          isColorCell={isColorRow}
+                          isColorCell={feature.toLowerCase() === 'colore' || feature.toLowerCase() === 'color'}
                         />
                       </div>
                     ))}
