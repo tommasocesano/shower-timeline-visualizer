@@ -58,7 +58,11 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
               whiteSpace: 'nowrap',
               textAlign: 'center',
               width: 'auto',
-              padding: '0 2px'
+              padding: '0 2px',
+              lineHeight: '1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             {value}
@@ -84,7 +88,11 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
               whiteSpace: 'nowrap',
               textAlign: 'center',
               width: 'auto',
-              padding: '0 2px'
+              padding: '0 2px',
+              lineHeight: '1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             {value}
