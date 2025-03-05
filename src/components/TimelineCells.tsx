@@ -44,13 +44,22 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
         <div 
           className="text-black flex items-center justify-center h-full w-full"
           style={{
-            transform: 'rotate(-90deg)',
-            whiteSpace: 'nowrap',
-            padding: '12px',
-            margin: '8px'
+            position: 'relative',
+            height: '100%',
+            width: '100%'
           }}
         >
-          {value}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%) rotate(-90deg)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {value}
+          </div>
         </div>
       ) : null;
     case 'aroma':
@@ -58,13 +67,22 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
         <div 
           className="text-black flex items-center justify-center h-full w-full"
           style={{
-            transform: 'rotate(-90deg)',
-            whiteSpace: 'nowrap',
-            padding: '12px',
-            margin: '8px'
+            position: 'relative',
+            height: '100%',
+            width: '100%'
           }}
         >
-          {value}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%) rotate(-90deg)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {value}
+          </div>
         </div>
       ) : null;
     case 'color':
