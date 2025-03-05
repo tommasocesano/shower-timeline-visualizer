@@ -42,11 +42,11 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
     case 'music':
       return value ? (
         <div 
-          className="text-black flex items-center justify-center h-full w-full"
+          className="text-black flex items-center justify-center"
           style={{
             position: 'relative',
-            height: '100%',
-            width: '100%'
+            width: '100%',
+            height: '100%'
           }}
         >
           <div
@@ -55,7 +55,10 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%) rotate(-90deg)',
+              transformOrigin: 'center center',
               whiteSpace: 'nowrap',
+              textAlign: 'center',
+              maxWidth: 'none'
             }}
           >
             {value}
@@ -65,11 +68,11 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
     case 'aroma':
       return value ? (
         <div 
-          className="text-black flex items-center justify-center h-full w-full"
+          className="text-black flex items-center justify-center"
           style={{
             position: 'relative',
-            height: '100%',
-            width: '100%'
+            width: '100%',
+            height: '100%'
           }}
         >
           <div
@@ -78,7 +81,10 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%) rotate(-90deg)',
+              transformOrigin: 'center center',
               whiteSpace: 'nowrap',
+              textAlign: 'center',
+              maxWidth: 'none'
             }}
           >
             {value}
