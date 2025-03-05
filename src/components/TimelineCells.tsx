@@ -52,9 +52,9 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
             style={{
               position: 'absolute',
               top: '50%',
-              left: '50%',
+              left: '20%', // Shifted from 50% to 20% (30% to the left)
               transform: 'translate(-50%, -50%) rotate(-90deg)',
-              transformOrigin: 'center',
+              transformOrigin: 'center center',
               whiteSpace: 'nowrap',
               textAlign: 'center',
               width: 'auto',
@@ -82,9 +82,9 @@ export const TimelineCell = ({ rowIndex, feature, value, colIndex, featureColors
             style={{
               position: 'absolute',
               top: '50%',
-              left: '50%',
+              left: '20%', // Shifted from 50% to 20% (30% to the left)
               transform: 'translate(-50%, -50%) rotate(-90deg)',
-              transformOrigin: 'center',
+              transformOrigin: 'center center',
               whiteSpace: 'nowrap',
               textAlign: 'center',
               width: 'auto',
